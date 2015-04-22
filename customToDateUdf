@@ -1,0 +1,6 @@
+class SimpleUDFExample extends UDF {
+  
+  public Text evaluate(Text input) {
+    return new Text("Hello " + input.toString());
+  }
+}
