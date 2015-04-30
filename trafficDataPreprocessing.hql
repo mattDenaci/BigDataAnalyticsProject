@@ -14,8 +14,8 @@ CREATE TABLE trafficInput(
 ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'
 LOCATION 's3://hdptstbkt-0/input/daily_traffic_counts';
 
-CREATE EXTERNAL TABLE trafficOutput(
-  date int, 
+CREATE EXTERNAL TABLE tf2001(
+  date string, 
   volume int, 
   id int,
   latitude double, 
@@ -25,8 +25,8 @@ stored as textfile
 location 's3://hdptstbkt-0/output/';
 
 
-INSERT OVERWRITE TABLE trafficOutput
-  select to_date(from_unixtime(unix_timestamp(date, 'MM/dd/yy'))), volume, longitude, latitude, id 
+INSERT OVERWRITE TABLE tf2001
+  select to_date(from_unixtime(unix_timestamp(date, 'MM/dd/yy'))), volume, id, longitude, latitude 
   from traffic 
   order by volume;
 
