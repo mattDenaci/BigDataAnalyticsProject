@@ -48,20 +48,5 @@ CREATE EXTERNAL TABLE propertyCrimeCounts(
     or ltrim(type) = "Motor Vehicle Theft" or ltrim(type) = "Larceny"
   group by date;
 
---NOTE: the code below has not yet be tested. Working out how to calculate rolling averages
--- in hive
-
-select dcc.date, dcc.$2,
-    (select avg(cdd.a) 
-     from 
-       CleanedCrimeData a 
-     WHERE 
-       a.id >= (b.Id - 3) 
-       AND a.id < b.Id
-       AND b.Id > 3 
-     ) as Average
-FROM 
-    dailyCrimeCounts as dcc;
-
 
 

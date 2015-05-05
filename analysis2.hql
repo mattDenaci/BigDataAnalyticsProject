@@ -2,7 +2,7 @@
 -- of the via matplotlib when we are all finished
 add file graphMaker.py
 
-CREATE EXTERNAL TABLE crimeWeatherAndCounts10DayMAVG(
+CREATE EXTERNAL TABLE weather10DayMAVGAndCrimeCounts10DayMAVG(
   date string,
   averageTemp double, 
   violentCrime double, 
@@ -13,7 +13,7 @@ CREATE EXTERNAL TABLE crimeWeatherAndCounts10DayMAVG(
 ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'
 location 's3://hdptstbkt-0/input/crime_and_weather_avg/crime10MVAVGandWeather';
 
-CREATE EXTERNAL TABLE results(
+CREATE EXTERNAL TABLE resultsWeather10dayMVG(
   crimeGroup string,
   linearr double,
   linearrSquared double,
@@ -26,11 +26,11 @@ CREATE EXTERNAL TABLE results(
 )
 row format delimited fields terminated by ','  
 stored as textfile
-location 's3://hdptstbkt-0/results/violent_crime_results_intermediate';
+location 's3://hdptstbkt-0/results/weather10dayMVG_results_intermediate';
 
 -- calulculate the regressions and correlation coefficients
 -- first for all crimes
-INSERT INTO TABLE results
+INSERT INTO TABLE resultsWeather10dayMVG
   SELECT 
     "all crimes",
     corr(averageTemp, allCrime), 
@@ -41,10 +41,10 @@ INSERT INTO TABLE results
     (5198*sum(averageTemp*allCrime) - (sum(averageTemp)*sum(allCrime)))/(5198*sum(power(averageTemp, 2)) - power(sum(averageTemp),2)),
     ((sum(sqrt(allCrime))*sum(power(averageTemp,2))) - (sum(averageTemp)*sum(averageTemp*sqrt(allCrime))))/(5198*sum(power(averageTemp, 2)) - power(sum(averageTemp),2)),
     (5198*sum(averageTemp*sqrt(allCrime)) - (sum(averageTemp)*sum(sqrt(allCrime))))/(5198*sum(power(averageTemp, 2)) - power(sum(averageTemp),2))
-  FROM crimeWeatherAndCounts10DayMAVG;
+  FROM weather10DayMAVGAndCrimeCounts10DayMAVG;
 
 -- now for only violent crimes
-INSERT INTO TABLE results
+INSERT INTO TABLE resultsWeather10dayMVG
   SELECT 
     "violent crimes",
     corr(averageTemp, violentCrime), 
@@ -55,10 +55,10 @@ INSERT INTO TABLE results
     (5198*sum(averageTemp*violentCrime) - (sum(averageTemp)*sum(violentCrime)))/(5198*sum(power(averageTemp, 2)) - power(sum(averageTemp),2)),
     ((sum(sqrt(violentCrime))*sum(power(averageTemp,2))) - (sum(averageTemp)*sum(averageTemp*sqrt(violentCrime))))/(5198*sum(power(averageTemp, 2)) - power(sum(averageTemp),2)),
     (5198*sum(averageTemp*sqrt(violentCrime)) - (sum(averageTemp)*sum(sqrt(violentCrime))))/(5198*sum(power(averageTemp, 2)) - power(sum(averageTemp),2))
-  FROM crimeWeatherAndCounts10DayMAVG;
+  FROM weather10DayMAVGAndCrimeCounts10DayMAVG;
 
 -- now for property crimes
-INSERT INTO TABLE results
+INSERT INTO TABLE resultsWeather10dayMVG
   SELECT 
     "property crimes",
     corr(averageTemp, propertyCrime), 
@@ -69,10 +69,10 @@ INSERT INTO TABLE results
     (5198*sum(averageTemp*propertyCrime) - (sum(averageTemp)*sum(propertyCrime)))/(5198*sum(power(averageTemp, 2)) - power(sum(averageTemp),2)),
     ((sum(sqrt(propertyCrime))*sum(power(averageTemp,2))) - (sum(averageTemp)*sum(averageTemp*sqrt(propertyCrime))))/(5198*sum(power(averageTemp, 2)) - power(sum(averageTemp),2)),
     (5198*sum(averageTemp*sqrt(propertyCrime)) - (sum(averageTemp)*sum(sqrt(propertyCrime))))/(5198*sum(power(averageTemp, 2)) - power(sum(averageTemp),2))
-  FROM crimeWeatherAndCounts10DayMAVG;
+  FROM weather10DayMAVGAndCrimeCounts10DayMAVG;
 
 --finally for misc crimes
-INSERT INTO TABLE results
+INSERT INTO TABLE resultsWeather10dayMVG
   SELECT 
     "misc crimes",
     corr(averageTemp, miscCrime), 
@@ -83,11 +83,11 @@ INSERT INTO TABLE results
     (5198*sum(averageTemp*miscCrime) - (sum(averageTemp)*sum(miscCrime)))/(5198*sum(power(averageTemp, 2)) - power(sum(averageTemp),2)),
     ((sum(sqrt(miscCrime))*sum(power(averageTemp,2))) - (sum(averageTemp)*sum(averageTemp*sqrt(miscCrime))))/(5198*sum(power(averageTemp, 2)) - power(sum(averageTemp),2)),
     (5198*sum(averageTemp*sqrt(miscCrime)) - (sum(averageTemp)*sum(sqrt(miscCrime))))/(5198*sum(power(averageTemp, 2)) - power(sum(averageTemp),2))
-  FROM crimeWeatherAndCounts10DayMAVG;
+  FROM weather10DayMAVGAndCrimeCounts10DayMAVG;
 
 --Now we'll calculate the tScores
 
-CREATE EXTERNAL TABLE resultsFinalCorrected(
+CREATE EXTERNAL TABLE resultsFinalWeather10dayMVGCorrected(
   crimeGroup string,
   linearr double,
   linearrSquared double,
@@ -102,9 +102,9 @@ CREATE EXTERNAL TABLE resultsFinalCorrected(
 )
 row format delimited fields terminated by ','  
 stored as textfile
-location 's3://hdptstbkt-0/results/weather_and_crime10DayAVGFinal_corrected';
+location 's3://hdptstbkt-0/results/weather10dayMVG_results_final_corrected';
 
-INSERT INTO TABLE resultsFinalCorrected
+INSERT INTO TABLE resultsFinalWeather10dayMVGCorrected
   SELECT 
    crimeGroup,
    linearr,
@@ -118,6 +118,3 @@ INSERT INTO TABLE resultsFinalCorrected
    (linearr*sqrt(5198-2))/sqrt(1-linearrSquared),
    (quadraticr*sqrt(5198-2))/sqrt(1-quadraticrSquared)
   FROM results;
-
-
-

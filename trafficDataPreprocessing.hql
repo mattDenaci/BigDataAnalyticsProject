@@ -22,7 +22,7 @@ CREATE EXTERNAL TABLE tf2001(
   longitude double)
 row format delimited fields terminated by ','  
 stored as textfile
-location 's3://hdptstbkt-0/output/';
+location 's3://hdptstbkt-0/input/trafficCounts';
 
 
 INSERT OVERWRITE TABLE tf2001
