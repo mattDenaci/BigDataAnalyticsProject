@@ -9,7 +9,7 @@ CREATE EXTERNAL TABLE weather10DayMAVGAndCrimeCounts10DayMAVG(
   allCrime double
 ) 
 ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'
-location 's3://hdptstbkt-0/input/crime_and_weather_avg/crime10MVAVGandWeather';
+location 's3://hdptstbkt-0/input/crime_and_weather_avg/crime10MVAVGandWeather10MAVG';
 
 CREATE EXTERNAL TABLE resultsWeather10dayMVG(
   crimeGroup string,
